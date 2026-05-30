@@ -5327,46 +5327,39 @@ export default function App() {
   }, []);
 // Save clients to Supabase whenever they change
   useEffect(() => {
-    if (clients.length === 0) return;// skip initial seed data
+    const hasRealChanges = clients !== initClients;
+    if (!hasRealChanges) return;
     clients.forEach(c => {
+      if (!c.id || typeof c.id === 'number' && c.id <= 5) return;
       supabase.from('clients').upsert({
-        id: typeof c.id === 'number' && c.id < 100 ? undefined : c.id,
-        name: c.name,
-        address: c.address,
-        frequency: c.frequency,
-        services: c.services,
-        rate: c.rate,
-        next_service: c.nextService,
-        scheduled_time: c.scheduledTime,
-        scheduled_duration: c.scheduledDuration,
+        id: c.id,
+        name: c.name, address: c.address, frequency: c.frequency,
+        services: c.services, rate: c.rate,
+        next_service: c.nextService, scheduled_time: c.scheduledTime,
         assigned_employee_ids: c.assignedEmployeeIds || [],
-        active: c.active,
-        sort_order: c.sortOrder,
-        completed_visit_dates: c.completedVisitDates || [],
-      });
+        active: c.active, completed_visit_dates: c.completedVisitDates || [],
+      }).then(({ error }) => { if (error) console.log('client error', error); });
     });
   }, [clients]);
 
   // Save employees to Supabase whenever they change
   useEffect(() => {
-    if (employees.length === 0) return; // skip initial seed data
+    const hasRealChanges = employees !== initEmployees;
+    if (!hasRealChanges) return;
     employees.forEach(e => {
+      if (!e.id || typeof e.id === 'number' && e.id <= 4) return;
       supabase.from('employees').upsert({
-        id: typeof e.id === 'number' && e.id < 10 ? undefined : e.id,
-        name: e.name,
-        role: e.role,
-        phone: e.phone,
-        color: e.color,
-        access_level: e.accessLevel,
-        pin: e.pin,
-        initials: e.initials,
-      });
+        id: e.id,
+        name: e.name, role: e.role, phone: e.phone,
+        color: e.color, access_level: e.accessLevel,
+        pin: e.pin, initials: e.initials,
+      }).then(({ error }) => { if (error) console.log('emp error', error); });
     });
   }, [employees]);
   useEffect(() => {
     if (employees.length === 0) return;
     employees.forEach(e => {
-      supabase.from('employees').upsert({
+      supabase.from('employees').insert({
         name: e.name, role: e.role, phone: e.phone,
         color: e.color, access_level: e.accessLevel,
         pin: e.pin, initials: e.initials,
