@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { supabase } from './supabase';
 
 const COLORS = {
   green: "#2D6A4F",
@@ -5306,7 +5307,85 @@ export default function App() {
   const [bfTests, setBfTests] = useState([]);
   const [testerInfo, setTesterInfo] = useState({ name: "", certNumber: "", certExpiry: "", licenseNumber: "", gaugeMake: "", gaugeSerial: "", gaugeCalDate: "" });
   const [editClientId, setEditClientId] = useState(null);
+  // Load data from Supabase on startup
+  useEffect(() => {
+    supabase.from('clients').select('*').then(({ data }) => {
+      if (data && data.length > 0) {
+        setClients(data.map(c => ({
+          ...c,
+          nextService: c.next_service,
+          scheduledTime: c.scheduled_time,
+          scheduledDuration: c.scheduled_duration,
+          assignedEmployeeIds: c.assigned_employee_ids || [],
+          completedVisitDates: c.completed_visit_dates || [],
+        })));
+      }
+    });
+    supabase.from('employees').select('*').then(({ data }) => {
+      if (data && data.length > 0) setEmployees(data);
+    });
+  }, []);
+// Save clients to Supabase whenever they change
+  useEffect(() => {
+    if (clients.length === 0) return;// skip initial seed data
+    clients.forEach(c => {
+      supabase.from('clients').upsert({
+        id: typeof c.id === 'number' && c.id < 100 ? undefined : c.id,
+        name: c.name,
+        address: c.address,
+        frequency: c.frequency,
+        services: c.services,
+        rate: c.rate,
+        next_service: c.nextService,
+        scheduled_time: c.scheduledTime,
+        scheduled_duration: c.scheduledDuration,
+        assigned_employee_ids: c.assignedEmployeeIds || [],
+        active: c.active,
+        sort_order: c.sortOrder,
+        completed_visit_dates: c.completedVisitDates || [],
+      });
+    });
+  }, [clients]);
 
+  // Save employees to Supabase whenever they change
+  useEffect(() => {
+    if (employees.length === 0) return; // skip initial seed data
+    employees.forEach(e => {
+      supabase.from('employees').upsert({
+        id: typeof e.id === 'number' && e.id < 10 ? undefined : e.id,
+        name: e.name,
+        role: e.role,
+        phone: e.phone,
+        color: e.color,
+        access_level: e.accessLevel,
+        pin: e.pin,
+        initials: e.initials,
+      });
+    });
+  }, [employees]);
+  useEffect(() => {
+    if (employees.length === 0) return;
+    employees.forEach(e => {
+      supabase.from('employees').upsert({
+        name: e.name, role: e.role, phone: e.phone,
+        color: e.color, access_level: e.accessLevel,
+        pin: e.pin, initials: e.initials,
+      }).then(({ error }) => { if (error) console.log('emp error', error); });
+    });
+  }, [employees]);
+
+  useEffect(() => {
+    if (clients.length === 0) return;
+    clients.forEach(c => {
+      supabase.from('clients').upsert({
+        name: c.name, address: c.address, frequency: c.frequency,
+        services: c.services, rate: c.rate,
+        next_service: c.nextService, scheduled_time: c.scheduledTime,
+        assigned_employee_ids: c.assignedEmployeeIds || [],
+        active: c.active, completed_visit_dates: c.completedVisitDates || [],
+      }).then(({ error }) => { if (error) console.log('client error', error); });
+    });
+  }, [clients]);
   const navigateToClient = (clientId) => {
     setEditClientId(clientId);
     setTab("clients");
