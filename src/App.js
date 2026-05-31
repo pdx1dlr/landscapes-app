@@ -1977,7 +1977,16 @@ function EmployeeEditorModal({ employee, onSave, onClose }) {
 
           <button onClick={() => {
             if (!form.name) return;
-            onSave({ ...form, id: employee?.id || Date.now(), initials: form.initials || autoInitials(form.name) });
+            const saved = { ...form, id: employee?.id || Date.now(), initials: form.initials || autoInitials(form.name) };
+console.log('Saving employee:', saved.name);
+supabase.from('employees').insert({
+  name: saved.name, role: saved.role, phone: saved.phone,
+  color: saved.color, access_level: saved.accessLevel,
+  pin: saved.pin, initials: saved.initials,
+}).then(({ data, error }) => {
+  console.log('Supabase result:', data, error);
+});
+onSave(saved);
             onClose();
           }} style={{ width: "100%", background: COLORS.green, color: "#fff", border: "none", borderRadius: 12, padding: "14px", fontWeight: 800, fontSize: 15, cursor: "pointer", fontFamily: "inherit" }}>
             {isNew ? "Add crew member" : "Save changes"}
@@ -2457,12 +2466,18 @@ function ClientsTab({ clients, setClients, initialEditId, onEditHandled }) {
     if (editId) {
       setClients(prev => prev.map(c => c.id === editId ? { ...form, id: editId, rate: parseFloat(form.rate) } : c));
     } else {
-      setClients(prev => [...prev, { ...form, id: Date.now(), rate: parseFloat(form.rate) }]);
-    }
-    setShowAdd(false);
-    setEditId(null);
-    setForm(blankForm);
-  };
+      const newClient = { ...form, id: Date.now(), rate: parseFloat(form.rate) };
+      setClients(prev => [...prev, newClient]);
+      supabase.from('clients').insert({
+        name: newClient.name, address: newClient.address,
+        frequency: newClient.frequency, services: newClient.services,
+        rate: newClient.rate, next_service: newClient.nextService,
+        active: newClient.active,
+        assigned_employee_ids: [],
+        completed_visit_dates: [],
+      }).then(({ data, error }) => { console.log('client save:', data, error); });
+    };
+  }
 
   const handleEdit = (c) => {
     setForm({ ...c, rate: c.rate.toString() });
@@ -5294,8 +5309,7 @@ function ProjectsTab({ projects, setProjects, employees, clients }) {
     </div>
   );
 }
-
-// -- ROOT APP ---------------------------------------------------------------
+//-- ROOT APP ---------------------------------------------------------------
 export default function App() {
   const [tab, setTab] = useState("schedule");
   const [clients, setClients] = useState(initClients);
@@ -5306,79 +5320,36 @@ export default function App() {
   const [assemblies, setAssemblies] = useState([]);
   const [bfTests, setBfTests] = useState([]);
   const [testerInfo, setTesterInfo] = useState({ name: "", certNumber: "", certExpiry: "", licenseNumber: "", gaugeMake: "", gaugeSerial: "", gaugeCalDate: "" });
-  const [editClientId, setEditClientId] = useState(null);
+  
   // Load data from Supabase on startup
+  const [editClientId, setEditClientId] = useState(null);
+  const [dbLoaded, setDbLoaded] = useState(false);
+
+  // Load from Supabase on startup
   useEffect(() => {
-    supabase.from('clients').select('*').then(({ data }) => {
-      if (data && data.length > 0) {
-        setClients(data.map(c => ({
+    Promise.all([
+      supabase.from('employees').select('*'),
+      supabase.from('clients').select('*'),
+    ]).then(([{ data: emps }, { data: cls }]) => {
+      if (emps && emps.length > 0) {
+        setEmployees(emps.map(e => ({
+          ...e, accessLevel: e.access_level,
+        })));
+      }
+      if (cls && cls.length > 0) {
+        setClients(cls.map(c => ({
           ...c,
           nextService: c.next_service,
           scheduledTime: c.scheduled_time,
-          scheduledDuration: c.scheduled_duration,
           assignedEmployeeIds: c.assigned_employee_ids || [],
           completedVisitDates: c.completed_visit_dates || [],
         })));
       }
-    });
-    supabase.from('employees').select('*').then(({ data }) => {
-      if (data && data.length > 0) setEmployees(data);
+      setDbLoaded(true);
     });
   }, []);
-// Save clients to Supabase whenever they change
-  useEffect(() => {
-    const hasRealChanges = clients !== initClients;
-    if (!hasRealChanges) return;
-    clients.forEach(c => {
-      if (!c.id || typeof c.id === 'number' && c.id <= 5) return;
-      supabase.from('clients').upsert({
-        id: c.id,
-        name: c.name, address: c.address, frequency: c.frequency,
-        services: c.services, rate: c.rate,
-        next_service: c.nextService, scheduled_time: c.scheduledTime,
-        assigned_employee_ids: c.assignedEmployeeIds || [],
-        active: c.active, completed_visit_dates: c.completedVisitDates || [],
-      }).then(({ error }) => { if (error) console.log('client error', error); });
-    });
-  }, [clients]);
 
-  // Save employees to Supabase whenever they change
-  useEffect(() => {
-    const hasRealChanges = employees !== initEmployees;
-    if (!hasRealChanges) return;
-    employees.forEach(e => {
-      if (!e.id || typeof e.id === 'number' && e.id <= 4) return;
-      supabase.from('employees').upsert({
-        id: e.id,
-        name: e.name, role: e.role, phone: e.phone,
-        color: e.color, access_level: e.accessLevel,
-        pin: e.pin, initials: e.initials,
-      }).then(({ error }) => { if (error) console.log('emp error', error); });
-    });
-  }, [employees]);
-  useEffect(() => {
-    if (employees.length === 0) return;
-    employees.forEach(e => {
-      supabase.from('employees').insert({
-        name: e.name, role: e.role, phone: e.phone,
-        color: e.color, access_level: e.accessLevel,
-        pin: e.pin, initials: e.initials,
-      }).then(({ error }) => { if (error) console.log('emp error', error); });
-    });
-  }, [employees]);
-
-  useEffect(() => {
-    if (clients.length === 0) return;
-    clients.forEach(c => {
-      supabase.from('clients').upsert({
-        name: c.name, address: c.address, frequency: c.frequency,
-        services: c.services, rate: c.rate,
-        next_service: c.nextService, scheduled_time: c.scheduledTime,
-        assigned_employee_ids: c.assignedEmployeeIds || [],
-        active: c.active, completed_visit_dates: c.completedVisitDates || [],
-      }).then(({ error }) => { if (error) console.log('client error', error); });
-    });
-  }, [clients]);
+  
   const navigateToClient = (clientId) => {
     setEditClientId(clientId);
     setTab("clients");
