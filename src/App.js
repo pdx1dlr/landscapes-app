@@ -2477,6 +2477,9 @@ function ClientsTab({ clients, setClients, initialEditId, onEditHandled }) {
         completed_visit_dates: [],
       }).then(({ data, error }) => { console.log('client save:', data, error); });
     };
+    setShowAdd(false);
+    setEditId(null);
+    setForm(blankForm);
   }
 
   const handleEdit = (c) => {
