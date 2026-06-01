@@ -1882,7 +1882,7 @@ const ACCESS_COLORS = {
   admin:   { bg: COLORS.greenPale, text: COLORS.green },
 };
 
-function EmployeeEditorModal({ employee, onSave, onClose }) {
+function EmployeeEditorModal({ employee, onSave, onClose, onDelete }) {
   const isNew = !employee;
   const blank = { name: "", role: "", phone: "", color: COLORS.green, accessLevel: "crew", pin: "", initials: "" };
   const [form, setForm] = useState(employee ? { ...employee } : blank);
@@ -2003,6 +2003,11 @@ onSave(saved);
           }} style={{ width: "100%", background: COLORS.green, color: "#fff", border: "none", borderRadius: 12, padding: "14px", fontWeight: 800, fontSize: 15, cursor: "pointer", fontFamily: "inherit" }}>
             {isNew ? "Add crew member" : "Save changes"}
           </button>
+          {!isNew && (
+  <button onClick={() => { onDelete(employee.id); onClose(); }} style={{ width: "100%", marginTop: 8, background: "transparent", border: `1px solid ${COLORS.amber}`, borderRadius: 10, padding: "11px", fontSize: 13, fontWeight: 600, color: COLORS.amber, cursor: "pointer" }}>
+    Delete crew member
+  </button>
+)}
         </div>
       </div>
     </div>
@@ -2146,6 +2151,10 @@ function EmployeesTab({ employees, setEmployees, clients, jobs, setJobs }) {
           employee={editingEmp}
           onSave={saveEmployee}
           onClose={() => { setShowEditor(false); setEditingEmp(null); }}
+onDelete={(id) => {
+  setEmployees(prev => prev.filter(e => e.id !== id));
+  supabase.from('employees').delete().eq('id', id);
+}}
         />
       )}
     </div>
