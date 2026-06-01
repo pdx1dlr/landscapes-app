@@ -723,6 +723,18 @@ function MasterScheduleView({ clients, setClients, jobs, setJobs, employees, onO
         employeeId: aids[0] || null,
         employeeName: employees.find(e => e.id === aids[0])?.name || null,
       }]);
+      supabase.from('jobs').insert({
+  client_id: clientId,
+  client_name: client.name,
+  date: completedDate,
+  status: 'completed',
+  revenue: client.rate,
+  clock_in: st.clockIn,
+  clock_out: new Date().toISOString(),
+  duration: dur,
+  employee_id: aids[0] || null,
+  employee_name: employees.find(e => e.id === aids[0])?.name || null,
+});
       setClients(prev => prev.map(c => c.id === clientId ? {
         ...c, nextService: next,
         completedVisitDates: [...(c.completedVisitDates || []), completedDate],
@@ -2791,7 +2803,7 @@ function timeAgo(iso) {
 }
 
 // -- PIN Login -------------------------------------------------------------
-function CrewLoginScreen({ onLogin }) {
+function CrewLoginScreen({ onLogin, employees }) {
   const [selected, setSelected] = useState(null);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
@@ -2802,7 +2814,7 @@ function CrewLoginScreen({ onLogin }) {
     setPin(next);
     setError("");
     if (next.length === 4) {
-      const emp = selected && CREW_EMPLOYEES.find(e => e.id === selected.id);
+      const emp = selected && (employees || CREW_EMPLOYEES).find(e => e.name === selected.name);
       setTimeout(() => {
         if (emp && emp.pin === next) {
           onLogin(emp);
@@ -2830,7 +2842,7 @@ function CrewLoginScreen({ onLogin }) {
         <div style={{ width: "100%", maxWidth: 360 }}>
           <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12, fontWeight: 600, textAlign: "center", marginBottom: 14, textTransform: "uppercase", letterSpacing: 0.8 }}>Who are you?</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {CREW_EMPLOYEES.map(emp => (
+            {(employees || CREW_EMPLOYEES).map(emp => (
               <button key={emp.id} onClick={() => setSelected(emp)} style={{
                 display: "flex", alignItems: "center", gap: 14, padding: "14px 18px",
                 background: "rgba(255,255,255,0.1)", border: "1.5px solid rgba(255,255,255,0.2)",
@@ -3243,7 +3255,7 @@ function CrewHomeScreen({ employee, onLogout, onOpenJob, jobStates }) {
 }
 
 // -- Root ------------------------------------------------------------------
-function CrewApp() {
+function CrewApp({ employees }) {
   const [employee, setEmployee] = useState(null);
   const [openClient, setOpenClient] = useState(null);
   const [jobStates, setJobStates] = useState({});
@@ -3253,7 +3265,7 @@ function CrewApp() {
   };
 
   // Not logged in - show login
-  if (!employee) return <CrewLoginScreen onLogin={setEmployee} />;
+  if (!employee) return <CrewLoginScreen onLogin={setEmployee} employees={employees} />;
 
   // Manager or Admin - show the full app with a sign-out button overlay
   if (employee.accessLevel === "manager" || employee.accessLevel === "admin") {
@@ -3813,7 +3825,7 @@ function QuotesTab({ quotes, setQuotes, clients }) {
 }
 
 // -- Crew View Tab (phone frame preview) -----------------------------------
-function CrewViewTab() {
+function CrewViewTab({ employees }) {
   const [resetKey, setResetKey] = useState(0);
 
   const empList = [
@@ -3863,7 +3875,7 @@ function CrewViewTab() {
           </div>
           {/* Screen */}
           <div style={{ borderRadius: 30, overflow: "hidden", height: 640, overflowY: "auto", background: "#fff" }}>
-            <CrewApp key={resetKey} />
+           <CrewApp key={resetKey} employees={employees} />
           </div>
           {/* Home bar */}
           <div style={{ display: "flex", justifyContent: "center", marginTop: 12 }}>
@@ -5451,7 +5463,7 @@ export default function App() {
         {tab === "projects"  && <ProjectsTab projects={projects} setProjects={setProjects} employees={employees} clients={clients} />}
         {tab === "backflow"  && <BackflowTab assemblies={assemblies} setAssemblies={setAssemblies} bfTests={bfTests} setBfTests={setBfTests} clients={clients} testerInfo={testerInfo} setTesterInfo={setTesterInfo} />}
         {tab === "analytics" && <AnalyticsTab jobs={jobs} clients={clients} />}
-        {tab === "crewview"  && <CrewViewTab />}
+        {tab === "crewview" && <CrewViewTab employees={employees} />}
       </div>
     </div>
   );
