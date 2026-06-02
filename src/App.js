@@ -2484,12 +2484,20 @@ function ClientsTab({ clients, setClients, initialEditId, onEditHandled }) {
         name: form.name, address: form.address,
         frequency: form.frequency, services: form.services,
         rate: parseFloat(form.rate), next_service: form.nextService,
+        contact_name: form.contact_name, phone: form.phone, phone_2: form.phone_2,
+      email: form.email, address_2: form.address_2, city: form.city,
+      state: form.state, zip: form.zip, property_size: form.property_size,
+      alerts: form.alerts,
       }).eq('id', editId).then(({ error }) => { console.log('client update:', error); }); 
     } else {
       supabase.from('clients').insert({
   name: form.name, address: form.address,
   frequency: form.frequency, services: form.services,
   rate: parseFloat(form.rate), next_service: form.nextService,
+  contact_name: form.contact_name, phone: form.phone, phone_2: form.phone_2,
+      email: form.email, address_2: form.address_2, city: form.city,
+      state: form.state, zip: form.zip, property_size: form.property_size,
+      alerts: form.alerts,
   active: true,
   assigned_employee_ids: [],
   completed_visit_dates: [],
