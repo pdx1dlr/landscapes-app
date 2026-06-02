@@ -2612,6 +2612,64 @@ const handleDelete = (id) => {
               <input type="date" value={form.nextService} onChange={e => setForm(f => ({ ...f, nextService: e.target.value }))}
                 style={{ width: "100%", border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "8px 10px", fontSize: 14, boxSizing: "border-box" }} />
             </div>
+            <>
+            <div style={{ marginBottom: 12 }}>
+  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: COLORS.slate, marginBottom: 4 }}>Contact name</label>
+  <input value={form.contact_name || ""} onChange={e => setForm(f => ({ ...f, contact_name: e.target.value }))}
+    style={{ width: "100%", border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 14 }} />
+</div>
+<div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+  <div style={{ flex: 1 }}>
+    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: COLORS.slate, marginBottom: 4 }}>Phone</label>
+    <input value={form.phone || ""} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+      style={{ width: "100%", border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 14 }} />
+  </div>
+  <div style={{ flex: 1 }}>
+    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: COLORS.slate, marginBottom: 4 }}>Phone 2</label>
+    <input value={form.phone_2 || ""} onChange={e => setForm(f => ({ ...f, phone_2: e.target.value }))}
+      style={{ width: "100%", border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 14 }} />
+  </div>
+</div>
+<div style={{ marginBottom: 12 }}>
+  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: COLORS.slate, marginBottom: 4 }}>Email</label>
+  <input value={form.email || ""} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+    style={{ width: "100%", border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 14 }} />
+</div>
+<div style={{ marginBottom: 12 }}>
+  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: COLORS.slate, marginBottom: 4 }}>Address 2</label>
+  <input value={form.address_2 || ""} onChange={e => setForm(f => ({ ...f, address_2: e.target.value }))}
+    style={{ width: "100%", border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 14 }} />
+</div>
+<div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+  <div style={{ flex: 2 }}>
+    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: COLORS.slate, marginBottom: 4 }}>City</label>
+    <input value={form.city || ""} onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
+      style={{ width: "100%", border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 14 }} />
+  </div>
+  <div style={{ flex: 1 }}>
+    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: COLORS.slate, marginBottom: 4 }}>State</label>
+    <input value={form.state || ""} onChange={e => setForm(f => ({ ...f, state: e.target.value }))}
+      style={{ width: "100%", border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 14 }} />
+  </div>
+  <div style={{ flex: 1 }}>
+    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: COLORS.slate, marginBottom: 4 }}>Zip</label>
+    <input value={form.zip || ""} onChange={e => setForm(f => ({ ...f, zip: e.target.value }))}
+      style={{ width: "100%", border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 14 }} />
+  </div>
+</div>
+<div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+  <div style={{ flex: 1 }}>
+    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: COLORS.slate, marginBottom: 4 }}>Property size</label>
+    <input value={form.property_size || ""} onChange={e => setForm(f => ({ ...f, property_size: e.target.value }))}
+      style={{ width: "100%", border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 14 }} />
+  </div>
+  <div style={{ flex: 1 }}>
+    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: COLORS.slate, marginBottom: 4 }}>Alerts</label>
+    <input value={form.alerts || ""} onChange={e => setForm(f => ({ ...f, alerts: e.target.value }))}
+      style={{ width: "100%", border: `1px solid ${COLORS.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 14 }} />
+  </div>
+</div>
+</>
             <div style={{ display: "flex", gap: 8 }}>
               <button onClick={handleSave} style={{ flex: 1, background: COLORS.green, color: "#fff", border: "none", borderRadius: 8, padding: "10px", fontWeight: 700, cursor: "pointer" }}>Save</button>
               {editId && <button onClick={() => handleDelete(editId)} style={{ background: "#DC2626", color: "#fff", border: "none", borderRadius: 8, padding: "10px 16px", fontWeight: 700, cursor: "pointer" }}>Delete</button>}
