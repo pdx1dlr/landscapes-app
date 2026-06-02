@@ -27,13 +27,7 @@ const today = new Date();
 const fmt = (d) => d.toISOString().split("T")[0];
 const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
 
-const initClients = [
-  { id: 1, name: "Hartwell Residence", address: "4821 Maple Ridge Dr", lat: 45.523, lng: -122.676, frequency: "Weekly", services: ["Lawn mowing", "Hedge trimming"], rate: 95, nextService: fmt(today), active: true },
-  { id: 2, name: "Greenfield Office Park", address: "1200 Commerce Blvd", lat: 45.531, lng: -122.682, frequency: "Bi-weekly", services: ["Lawn mowing", "Fertilization"], rate: 240, nextService: fmt(addDays(today, 2)), active: true },
-  { id: 3, name: "Lakeview Estates HOA", address: "800 Lakeview Circle", lat: 45.518, lng: -122.660, frequency: "Weekly", services: ["Lawn mowing", "Leaf cleanup"], rate: 320, nextService: fmt(addDays(today, 1)), active: true },
-  { id: 4, name: "Morrison Household", address: "3355 Birch Lane", lat: 45.527, lng: -122.690, frequency: "Monthly", services: ["Aeration", "Fertilization"], rate: 175, nextService: fmt(addDays(today, 5)), active: true },
-  { id: 5, name: "Sunrise Garden Club", address: "211 Sunrise Ave", lat: 45.515, lng: -122.670, frequency: "Bi-weekly", services: ["Lawn mowing", "Hedge trimming", "Irrigation check"], rate: 280, nextService: fmt(addDays(today, 3)), active: true },
-];
+const initClients = [];
 
 // Access levels: "crew" = field app only, "full" = full manager app
 const ACCESS_LEVELS = [
