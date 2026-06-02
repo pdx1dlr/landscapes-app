@@ -2485,7 +2485,12 @@ function ClientsTab({ clients, setClients, initialEditId, onEditHandled }) {
   const handleSave = () => {
     if (!form.name || !form.rate) return;
     if (editId) {
-      setClients(prev => prev.map(c => c.id === editId ? { ...form, id: editId, rate: parseFloat(form.rate) } : c));
+     setClients(prev => prev.map(c => c.id === editId ? { ...form, id: editId, rate: parseFloat(form.rate) } : c));
+      supabase.from('clients').update({
+        name: form.name, address: form.address,
+        frequency: form.frequency, services: form.services,
+        rate: parseFloat(form.rate), next_service: form.nextService,
+      }).eq('id', editId).then(({ error }) => { console.log('client update:', error); });
     } else {
       const newClient = { ...form, id: Date.now(), rate: parseFloat(form.rate) };
       setClients(prev => [...prev, newClient]);
@@ -2508,7 +2513,14 @@ function ClientsTab({ clients, setClients, initialEditId, onEditHandled }) {
     setEditId(c.id);
     setShowAdd(true);
   };
-
+const handleDelete = (id) => {
+    if (!window.confirm("Delete this client? This cannot be undone.")) return;
+    setClients(prev => prev.filter(c => c.id !== id));
+    supabase.from('clients').delete().eq('id', id);
+    setShowAdd(false);
+    setEditId(null);
+    setForm(blankForm);
+  };
   const toggleActive = (id) => setClients(prev => prev.map(c => c.id === id ? { ...c, active: !c.active } : c));
 
   return (
@@ -2596,6 +2608,7 @@ function ClientsTab({ clients, setClients, initialEditId, onEditHandled }) {
             </div>
             <div style={{ display: "flex", gap: 8 }}>
               <button onClick={handleSave} style={{ flex: 1, background: COLORS.green, color: "#fff", border: "none", borderRadius: 8, padding: "10px", fontWeight: 700, cursor: "pointer" }}>Save</button>
+              {editId && <button onClick={() => handleDelete(editId)} style={{ background: "#DC2626", color: "#fff", border: "none", borderRadius: 8, padding: "10px 16px", fontWeight: 700, cursor: "pointer" }}>Delete</button>}
               <button onClick={() => { setShowAdd(false); setEditId(null); }} style={{ flex: 1, background: "#F3F4F6", color: COLORS.slate, border: "none", borderRadius: 8, padding: "10px", fontWeight: 700, cursor: "pointer" }}>Cancel</button>
             </div>
           </div>
