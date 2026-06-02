@@ -2492,16 +2492,20 @@ function ClientsTab({ clients, setClients, initialEditId, onEditHandled }) {
         rate: parseFloat(form.rate), next_service: form.nextService,
       }).eq('id', editId).then(({ error }) => { console.log('client update:', error); }); 
     } else {
-      const newClient = { ...form, id: Date.now(), rate: parseFloat(form.rate) };
-      setClients(prev => [...prev, newClient]);
       supabase.from('clients').insert({
-        name: newClient.name, address: newClient.address,
-        frequency: newClient.frequency, services: newClient.services,
-        rate: newClient.rate, next_service: newClient.nextService,
-        active: newClient.active,
-        assigned_employee_ids: [],
-        completed_visit_dates: [],
-      }).then(({ data, error }) => { console.log('client save:', data, error); });
+  name: form.name, address: form.address,
+  frequency: form.frequency, services: form.services,
+  rate: parseFloat(form.rate), next_service: form.nextService,
+  active: true,
+  assigned_employee_ids: [],
+  completed_visit_dates: [],
+}).select().then(({ data, error }) => {
+  if (data && data[0]) {
+    const newClient = { ...data[0], nextService: data[0].next_service, assignedEmployeeIds: data[0].assigned_employee_ids || [], completedVisitDates: data[0].completed_visit_dates || [] };
+    setClients(prev => [...prev, newClient]);
+  }
+  console.log('client save:', data, error);
+});
     };
     setShowAdd(false);
     setEditId(null);
@@ -2516,7 +2520,7 @@ function ClientsTab({ clients, setClients, initialEditId, onEditHandled }) {
 const handleDelete = (id) => {
     if (!window.confirm("Delete this client? This cannot be undone.")) return;
     setClients(prev => prev.filter(c => c.id !== id));
-    supabase.from('clients').delete().eq('id', id);
+    supabase.from('clients').delete().eq('id', id).then(({ error }) => { console.log('delete result:', id, error); });
     setShowAdd(false);
     setEditId(null);
     setForm(blankForm);
