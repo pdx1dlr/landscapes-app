@@ -2483,14 +2483,14 @@ function ClientsTab({ clients, setClients, initialEditId, onEditHandled }) {
   const toggleService = (s) => setForm(f => ({ ...f, services: f.services.includes(s) ? f.services.filter(x => x !== s) : [...f.services, s] }));
 
   const handleSave = () => {
-    if (!form.name || !form.rate) return;
+    if (!form.name || form.rate === "") return;
     if (editId) {
      setClients(prev => prev.map(c => c.id === editId ? { ...form, id: editId, rate: parseFloat(form.rate) } : c));
       supabase.from('clients').update({
         name: form.name, address: form.address,
         frequency: form.frequency, services: form.services,
         rate: parseFloat(form.rate), next_service: form.nextService,
-      }).eq('id', editId).then(({ error }) => { console.log('client update:', error); });
+      }).eq('id', editId).then(({ error }) => { console.log('client update:', error); }); 
     } else {
       const newClient = { ...form, id: Date.now(), rate: parseFloat(form.rate) };
       setClients(prev => [...prev, newClient]);
