@@ -2174,6 +2174,14 @@ function ClientImportModal({ onImport, onClose }) {
     { key: "frequency",   label: "Frequency",              required: false },
     { key: "nextService", label: "Next service date",      required: false },
     { key: "notes",       label: "Notes",                  required: false },
+    { key: "phone_2",       label: "Phone 2",           required: false },
+  { key: "contact_name",  label: "Contact name",       required: false },
+  { key: "address_2",     label: "Address 2",          required: false },
+  { key: "city",          label: "City",               required: false },
+  { key: "state",         label: "State",              required: false },
+  { key: "zip",           label: "Zip",                required: false },
+  { key: "property_size", label: "Property size",      required: false },
+  { key: "alerts",        label: "Alerts",             required: false },
   ];
 
   // Parse CSV or TSV text
@@ -2338,7 +2346,7 @@ function ClientImportModal({ onImport, onClose }) {
               <div style={{ background: COLORS.cream, borderRadius: 12, padding: "12px 16px", marginBottom: 16, border: `1px solid ${COLORS.border}` }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: COLORS.charcoal, marginBottom: 6 }}>Tip Expected columns (in any order)</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                  {["Name", "Address", "Email", "Phone", "Rate", "Frequency", "Next Service Date", "Notes"].map(col => (
+                  {["Name", "Address", "Email", "Phone", "Phone 2", "Contact Name", "Address 2", "City", "State", "Zip", "Rate", "Frequency", "Next Service Date", "Property Size", "Alerts", "Notes"].map(col => (
                     <span key={col} style={{ background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 6, padding: "2px 8px", fontSize: 11, color: COLORS.slate }}>{col}</span>
                   ))}
                 </div>
