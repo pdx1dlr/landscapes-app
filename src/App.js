@@ -1849,9 +1849,11 @@ supabase.from('clients').update({
       {/* Crew picker modal */}
       {showCrewPicker && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 20 }}>
-          <div style={{ background: COLORS.white, borderRadius: 16, padding: 24, width: "100%", maxWidth: 360 }}>
+          <div style={{ background: COLORS.white, borderRadius: 16, padding: 24, width: "100%", maxWidth: 360, maxHeight: "80vh", overflowY: "auto", position: "relative" }}>
             <h3 style={{ margin: "0 0 4px", fontSize: 16, color: COLORS.charcoal }}>Visible crew</h3>
             <p style={{ margin: "0 0 16px", fontSize: 12, color: COLORS.muted }}>Shown as rows in the Day timeline</p>
+            <button onClick={() => setShowCrewPicker(false)} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", fontSize: 20, cursor: "pointer", color: COLORS.muted }}>✕</button>
+            
             {employees.map(emp => {
               const selected = visibleEmpIds.includes(emp.id);
               return (
