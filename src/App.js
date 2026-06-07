@@ -1512,7 +1512,7 @@ supabase.from('clients').update({
   const handleSaveJob = (clientId, changes) => {
     setClients(prev => prev.map(c => c.id === clientId ? { ...c, ...changes } : c));
     setOpenJob(prev => prev ? { ...prev, ...changes } : null);
-    if (changes.id) supabase.from('jobs').update(changes).eq('id', changes.id).then(({ error }) => console.log('job update:', error));
+    if (changes.id) supabase.from('jobs').update(changes).eq('id', changes.id).then(({ error }) => console.log('job update:', error));  
   };
 
   const handleDeleteJob = (clientId) => {
@@ -5456,8 +5456,9 @@ export default function App() {
   useEffect(() => {
     Promise.all([
       supabase.from('employees').select('*'),
-      supabase.from('clients').select('*'),
-    ]).then(([{ data: emps }, { data: cls }]) => {
+    supabase.from('clients').select('*'),
+    supabase.from('jobs').select('*'),
+  ]).then(([{ data: emps }, { data: cls }, { data: jbs }]) => {
       if (emps && emps.length > 0) {
         setEmployees(emps.map(e => ({
           ...e, accessLevel: e.access_level,
@@ -5471,6 +5472,9 @@ export default function App() {
           assignedEmployeeIds: c.assigned_employee_ids || [],
           completedVisitDates: c.completed_visit_dates || [],
         })));
+        if (jbs && jbs.length > 0) {
+      setJobs(jbs);
+    }
       }
       setDbLoaded(true);
     });
