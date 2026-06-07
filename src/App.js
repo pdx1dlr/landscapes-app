@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from './supabase';
 
@@ -4666,7 +4667,7 @@ function BackflowTab({ assemblies, setAssemblies, bfTests, setBfTests, clients, 
             return <div style={{ background: COLORS.greenPale, borderRadius: 12, padding: "10px 14px", marginBottom: 16, fontSize: 12, color: COLORS.green, fontWeight: 600 }}>Done Cert valid . {daysLeft} days remaining</div>;
           })()}
 
-          <button onClick={() => { setTesterInfo(tForm); }}
+          <button onClick={() => { setTesterInfo(tForm); localStorage.setItem('testerInfo', JSON.stringify(tForm)); }}
             style={{ width: "100%", background: COLORS.green, color: "#fff", border: "none", borderRadius: 12, padding: "13px", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>
             Save certification info
           </button>
@@ -5428,7 +5429,7 @@ export default function App() {
   const [projects, setProjects] = useState([]);
   const [assemblies, setAssemblies] = useState([]);
   const [bfTests, setBfTests] = useState([]);
-  const [testerInfo, setTesterInfo] = useState({ name: "", certNumber: "", certExpiry: "", licenseNumber: "", gaugeMake: "", gaugeSerial: "", gaugeCalDate: "" });
+  const [testerInfo, setTesterInfo] = useState(() => { try { const s = localStorage.getItem('testerInfo'); return s ? JSON.parse(s) : { name: "", certNumber: "", certExpiry: "", licenseNumber: "", gaugeMake: "", gaugeSerial: "", gaugeCalDate: "" }; } catch(e) { return { name: "", certNumber: "", certExpiry: "", licenseNumber: "", gaugeMake: "", gaugeSerial: "", gaugeCalDate: "" }; } });
   
   // Load data from Supabase on startup
   const [editClientId, setEditClientId] = useState(null);
