@@ -1491,6 +1491,22 @@ function ScheduleTab({ clients, setClients, jobs, setJobs, employees, onNavigate
       employeeName: employees.find(e => e.id === aids[0])?.name || null,
       duration: null,
     }]);
+    // Save job to Supabase
+supabase.from('jobs').insert({
+  client_id: clientId,
+  client_name: client.name,
+  date: completedDate,
+  status: "completed",
+  revenue: client.rate,
+  employee_id: aids[0] || null,
+  employee_name: employees.find(e => e.id === aids[0])?.name || null,
+}).then(({ error }) => console.log('job save:', error));
+
+// Update client in Supabase
+supabase.from('clients').update({
+  next_service: next,
+  completed_visit_dates: [...(client.completedVisitDates || []), completedDate],
+}).eq('id', clientId).then(({ error }) => console.log('client update:', error));
   };
 
   const handleSaveJob = (clientId, changes) => {
