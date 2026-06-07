@@ -1495,7 +1495,7 @@ function ScheduleTab({ clients, setClients, jobs, setJobs, employees, onNavigate
 supabase.from('jobs').insert({
   client_id: clientId,
   client_name: client.name,
-  date: completedDate,
+  date: completedDate,  
   status: "completed",
   revenue: client.rate,
   employee_id: aids[0] || null,
@@ -1512,6 +1512,7 @@ supabase.from('clients').update({
   const handleSaveJob = (clientId, changes) => {
     setClients(prev => prev.map(c => c.id === clientId ? { ...c, ...changes } : c));
     setOpenJob(prev => prev ? { ...prev, ...changes } : null);
+    if (changes.id) supabase.from('jobs').update(changes).eq('id', changes.id).then(({ error }) => console.log('job update:', error));
   };
 
   const handleDeleteJob = (clientId) => {
